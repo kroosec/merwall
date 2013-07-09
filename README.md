@@ -29,3 +29,6 @@ $ make clean
 
 # ToDo
 Update documentation: Installation, usage etc.,<br/>
+
+# Credits
+* Thanks to Djalal "tixxdz" Harouni ( http://opendz.org/ ) for all the tips, help and encouragement.
