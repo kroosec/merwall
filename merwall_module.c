@@ -32,20 +32,19 @@ unsigned int merwall_hook_out(unsigned int hooknum, struct sk_buff *skb,
  * @direction DIRECTION_* value for traffic direction (Incoming/Outgoing.)
  *
  * @return NF_* value. Based on rules list matching. */
-unsigned int packet_handle(const struct sk_buff *skb, unsigned int direction)
+unsigned int packet_handle(const struct sk_buff *skb, __u8 direction)
 {
-	struct mer_rule *rule, *packet_info;
+	struct mer_rule *rule, packet_info;
 
-	/* Get packet info */
-	packet_info = parse_packet(skb);
-	if (!packet_info)
+	/* Get packet info in a mer_rule style structure */
+	memset(&packet_info, '\0', sizeof(packet_info));
+	packet_info.direction = direction;
+	if (parse_packet(skb, &packet_info))
 		return NF_ACCEPT;
-
-	packet_info->direction = direction;
 
 	/* Match packet with every rule */
 	list_for_each_entry(rule, &rules_list, list)
-		if (rule_match(rule, packet_info)) {
+		if (rule_match(rule, &packet_info)) {
 			switch(rule->action) {
 			case ACT_DROP:
 				printk("Merwall: #%d -> Drop packet.\n",
@@ -68,16 +67,16 @@ unsigned int packet_handle(const struct sk_buff *skb, unsigned int direction)
 
 /*
  * Extracts relevant information from an sk_buff structure into a mer_rule
- * structure to be matched with rules list.
+ * structure to be easily matched with rules list.
+ *
+ * @return 1 if error, 0 otherwise.
  */
-static struct mer_rule *parse_packet(const struct sk_buff *skb)
+static int parse_packet(const struct sk_buff *skb, struct mer_rule *packet_info)
 {
-	struct mer_rule *packet_info;
 	struct iphdr *ip_header;
 
-	packet_info = kmalloc(sizeof(*packet_info), GFP_KERNEL);
-	if (!packet_info)
-		return NULL;
+	if (!packet_info || !skb)
+		return 1;
 
 	ip_header = (struct iphdr *) skb_network_header(skb);
 	packet_info->srcip = ip_header->saddr;
@@ -105,7 +104,7 @@ static struct mer_rule *parse_packet(const struct sk_buff *skb)
 	else
 		packet_info->proto = PROTO_ALL;
 
-	return packet_info;
+	return 0;
 }
 
 /*
