@@ -11,9 +11,6 @@
 
 #include "merwall_common.h"
 
-/* Rules linked list */
-static LIST_HEAD(rules_list);
-
 /* Function prototypes */
 
 static int rule_show(struct mer_rule *, char *, int);

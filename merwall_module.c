@@ -4,6 +4,9 @@
 
 #include "merwall_module.h"
 
+/* Rules linked list */
+static LIST_HEAD(rules_list);
+
 /* Netfilter hook structures: Incoming and Outgoing traffic. */
 static struct nf_hook_ops nfhi;
 static struct nf_hook_ops nfho;
