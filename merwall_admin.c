@@ -34,11 +34,9 @@ void out_error()
 /* Initialize a mer_rule structure. */
 #define mer_rule_new(mrule)					\
 	do {							\
-		mrule = malloc(sizeof(*mrule));			\
+		mrule = calloc(1, sizeof(*mrule));		\
 		if (!mrule)					\
 			return 1;				\
-								\
-		memset(mrule, '\0', sizeof(mrule));		\
 	} while (0);
 
 /*
