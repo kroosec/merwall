@@ -118,11 +118,11 @@ static int parse_packet(const struct sk_buff *skb, struct mer_rule *packet_info)
 static int rule_match(const struct mer_rule *rule,
 		      const struct mer_rule *pinfo)
 {
-	if (rule->direction == DIRECTION_ALL
+	if (rule->direction != DIRECTION_ALL
 	    && rule->direction != pinfo->direction)
 		return 0;
 
-	if (rule->proto == PROTO_ALL
+	if (rule->proto != PROTO_ALL
 	    && rule->proto != pinfo->proto)
 		return 0;
 
